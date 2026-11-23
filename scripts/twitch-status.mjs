@@ -9,6 +9,11 @@ const OUT = "data/stream-status.json";
 const HEARTBEAT_MS = 30 * 60 * 1000;   // republish at least every 30 min so visitors can tell the data is fresh
 
 const id = process.env.TWITCH_CLIENT_ID, secret = process.env.TWITCH_CLIENT_SECRET;
+if (!id || !secret) {   // not set up yet: do nothing, publish nothing
+  console.log("Twitch app keys are not in the repository secrets yet; skipping this check.");
+  if (process.env.GITHUB_OUTPUT) fs.appendFileSync(process.env.GITHUB_OUTPUT, "changed=false\n");
+  process.exit(0);
+}
 const prev = (() => { try { return JSON.parse(fs.readFileSync(OUT, "utf8")); } catch { return null; } })();
 const now = new Date();
 
