@@ -1,0 +1,57 @@
+# Checks SinCityRyd3r_702's real Twitch status about every 5 minutes (GitHub's shortest schedule;
+# GitHub can start scheduled runs late, often by several minutes). When the status changes it saves
+# data/stream-status.json and republishes the site, so visitors see it without anyone redeploying.
+name: Twitch live status
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+concurrency:
+  group: twitch-status
+  cancel-in-progress: false
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.status.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - id: status
+        run: node scripts/twitch-status.mjs
+        env:
+          TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
+          TWITCH_CLIENT_SECRET: ${{ secrets.TWITCH_CLIENT_SECRET }}
+          TWITCH_CHANNEL_LOGIN: sincityryd3r_702
+      - if: steps.status.outputs.changed == 'true'
+        run: |
+          git config user.name "twitch-status-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/stream-status.json
+          git commit -m "Twitch status: live=${{ steps.status.outputs.live }}" || exit 0
+          git pull --rebase --quiet
+          git push
+  deploy:
+    needs: check
+    if: needs.check.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - uses: actions/deploy-pages@v4
