@@ -1827,6 +1827,12 @@ html.in-preview .devsw button.own::after{display:none}
 .embed-btn::before{content:"";position:absolute;inset:-7px -4px;border-radius:999px}
 /* smallest labels a touch larger on phones for readability */
 @media (max-width:600px){.itc-kind,.itc-game,.rec,.gc-cat,.gchip{font-size:.66rem}.gbadge small{font-size:.62rem}}
+/* game cards: centre an incomplete last row instead of leaving a gap */
+@media (min-width:761px) and (max-width:1180px){.gfeat{grid-template-columns:repeat(6,1fr)}.gfeat>*{grid-column:span 2}.gfeat>:nth-child(4):nth-last-child(2){grid-column:2/span 2}.gfeat>:nth-child(3n+1):last-child{grid-column:3/span 2}}
+@media (min-width:441px) and (max-width:760px){.gfeat{grid-template-columns:repeat(4,1fr)}.gfeat>*{grid-column:span 2}.gfeat>:nth-child(odd):last-child{grid-column:2/span 2}}
+/* 2-column card grids: centre a lone last card; social links 3 + 3 on tablets */
+@media (min-width:641px) and (max-width:980px){.g3{grid-template-columns:repeat(4,1fr)}.g3>*{grid-column:span 2}.g3>:nth-child(odd):last-child{grid-column:2/span 2}}
+@media (min-width:641px) and (max-width:1023px){.soc{grid-template-columns:repeat(3,1fr)!important}}
 </style>
 </head>
 <body class="lock">
@@ -2410,7 +2416,7 @@ V.home=()=>`
       <h1 class="brand-h display split" aria-label="SinCityRyd3r_702"><span class="glow" aria-hidden="true"></span>Sin<em>City</em>Ryd3r_702</h1>
       <p class="hero-tag rv d3">More than just <span class="red">the game.</span></p>
       <p class="hero-trio rv d3"><span>Good games</span><span>Real people</span><span>Unforgettable moments</span></p>
-      <p class="hero-intro rv d4">Step into Chris's world of gaming, competition and community.<br>Every match tells a new story. Every moment brings us closer.</p>
+      <p class="hero-intro rv d4">Step into Chris's world of gaming, competition and community. <br>Every match tells a new story. Every moment brings us closer.</p>
       <ul class="hero-pillars rv d4" aria-label="What to expect on stream">
         <li>${icon("gamepad")}MW4 &middot; Warzone &middot; NBA 2K27</li>
         <li>${icon("users")}Family, friends and the squad</li>
@@ -3560,7 +3566,7 @@ window.DEVMODE=(()=>{
     else if(d.scr==="dev")set(d.mode);
     else if(d.scr==="route"&&d.page&&("#"+d.page)!==location.hash){ready=true;msg.hidden=true;history.replaceState(null,"","#"+d.page)}});
   addEventListener("keydown",e=>{if(e.key==="Escape"&&openMode)set(own())});
-  addEventListener("resize",()=>{layout();paint()});
+  addEventListener("resize",()=>{if(!inPreview&&!openMode){natural=own();mode=natural}layout();paint()});
   addEventListener("hashchange",()=>{if(openMode){/* the frame is the page being viewed; keep the outer page quiet */}});
   paint();
   if(mode!==natural)open(mode);
