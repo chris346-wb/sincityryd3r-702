@@ -2400,37 +2400,49 @@ const LIVE=(()=>{
     if(txt){const now=Date.now();S.slots=expand(parseICS(txt),now-READY_MS,now+15*864e5);S.calFail=false}else{S.slots=S.slots||[];S.calFail=true}
     S.calAt=Date.now();paint();calT=setTimeout(loadCal,30*60e3)}
   /* --- official Twitch embedded player --- */
-  const loadScript=()=>scriptP||(scriptP=new Promise((ok,no)=>{if(window.Twitch&&Twitch.Player)return ok();const sc=document.createElement("script");sc.src="https://player.twitch.tv/js/embed/v1.js";sc.async=true;sc.onload=()=>window.Twitch&&Twitch.Player?ok():no();sc.onerror=no;document.head.appendChild(sc)}));
+  const loadScript=()=>scriptP||(scriptP=new Promise((ok,no)=>{if(window.Twitch&&Twitch.Player)return ok();const sc=document.createElement("script");sc.src=TEST.fail?"https://player.twitch.tv/js/embed/__missing__.js":"https://player.twitch.tv/js/embed/v1.js";sc.async=true;sc.onload=()=>window.Twitch&&Twitch.Player?ok():no();sc.onerror=no;document.head.appendChild(sc)}));
+  /* Status rules: "live" and "offline" are shown ONLY after Twitch's own player reports them.
+     Until the first report the cards say "Checking stream status"; if Twitch cannot be reached (script blocked,
+     no report within 20 s, or the visitor goes offline) they say "Stream status unavailable" and keep retrying. */
+  const TEST=(()=>{try{return JSON.parse(sessionStorage.getItem("scr_live_test")||"null")||{}}catch(e){return {}}})(); // tester-only hook, inert for visitors
+  const CHAN=TEST.channel||CH;
   function set(v){clearTimeout(waitT);S.embed=v;S.embedAt=Date.now();S.embedFail=false;paint()}
+  function fail(){clearTimeout(waitT);S.embedFail=true;paint()}
   async function makePlayer(){if(!host||!host.isConnected)return;clearTimeout(waitT);
-    try{await loadScript()}catch(e){S.embedFail=true;paint();return}
+    if(navigator.onLine===false){fail();return}
+    try{await loadScript()}catch(e){scriptP=null;fail();return}
     if(!host||!host.isConnected)return;host.innerHTML='<div class="lv-wait">Checking Twitch</div>';const box=document.createElement("div");box.style.cssText="position:absolute;inset:0";host.appendChild(box);
-    try{player=new Twitch.Player(box,{channel:CH,width:"100%",height:"100%",muted:true,autoplay:false,parent:[location.hostname||"localhost"]});
+    const started=Date.now();
+    try{player=new Twitch.Player(box,{channel:CHAN,width:"100%",height:"100%",muted:true,autoplay:false,parent:[location.hostname||"localhost"]});
       const E=Twitch.Player;player.addEventListener(E.ONLINE,()=>set(true));player.addEventListener(E.OFFLINE,()=>set(false));player.addEventListener(E.ENDED,()=>set(false));
-      player.addEventListener(E.READY,()=>{const w=host&&host.querySelector(".lv-wait");w&&w.remove()})}catch(e){S.embedFail=true;paint();return}
-    waitT=setTimeout(()=>{if(S.embed===null||Date.now()-S.embedAt>20e3){S.embedFail=true;paint()}},20e3)}
+      player.addEventListener(E.READY,()=>{const w=host&&host.querySelector(".lv-wait");w&&w.remove()})}catch(e){fail();return}
+    waitT=setTimeout(()=>{if(S.embedAt<started)fail()},20e3)}
+  const watching=()=>{try{return !!(player&&player.isPaused&&!player.isPaused())}catch(e){return false}};
   function recheck(){clearTimeout(recheckT);if(!host||!host.isConnected)return;const d=decide(Date.now());
     const near=d.state==="ready"||(d.state==="countdown"&&d.slot.s-Date.now()<15*60e3);
-    if(d.state!=="live")recheckT=setTimeout(()=>{if(S.embed!==true)makePlayer();recheck()},near?60e3:5*60e3)}
+    const wait=d.state==="unavailable"?30e3:d.state==="checking"?25e3:d.state==="live"?120e3:near?60e3:120e3;
+    recheckT=setTimeout(()=>{if(!(d.state==="live"&&watching()))makePlayer();recheck()},wait)}
   /* --- the one decision every view shares --- */
   function decide(now){
+    if(S.embedFail)return{state:"unavailable",slot:S.slots&&S.slots.find(x=>x.s>now)};
+    if(S.embed===null)return{state:"checking"};
     if(S.embed===true)return{state:"live"};
-    if(S.embed===null&&!S.embedFail&&host)return{state:"checking"};
-    if(S.slots===null)return{state:"checking"};
-    const cur=S.slots.find(x=>x.s<=now&&now<Math.min(x.e,x.s+READY_MS));
+    const slots=S.slots||[];
+    const cur=slots.find(x=>x.s<=now&&now<Math.min(x.e,x.s+READY_MS));
     if(cur)return{state:"ready",slot:cur};
-    const nx=S.slots.find(x=>x.s>now);if(nx)return{state:"countdown",slot:nx};
+    const nx=slots.find(x=>x.s>now);if(nx)return{state:"countdown",slot:nx};
     return{state:"none"}}
   const tw=(l,ic="twitch")=>btn(l,CONFIG.twitchUrl,"p",ic,true);
-  function html(d,big){const unk=S.embedFail&&d.state!=="live"?`<p class="lv-note">Live status could not load just now. Twitch always has the latest.</p>`:"";
+  function html(d,big){const unk="";
     const slotMeta=s=>big&&(s.t||s.g)?`<p class="lv-meta">${escA(s.t)}${s.g?" &middot; "+escA(s.g):""}</p>`:"";
     if(d.state==="live")return `<span class="lv-badge on"><i></i>Live now</span><h3 class="lv-h">We're live, Sin Squad!</h3><p class="lv-p">Chris is live on Twitch right now. Come hang out and join the action.</p><div class="lv-act">${tw("Watch live on Twitch","play")}</div>`;
-    if(d.state==="checking")return `<span class="lv-badge chk"><i></i>Checking Twitch</span><h3 class="lv-h">Is the city live?</h3><p class="lv-p">Checking Chris's channel on Twitch right now.</p>`;
+    if(d.state==="checking")return `<span class="lv-badge chk"><i></i>Checking</span><h3 class="lv-h">Checking stream status...</h3><p class="lv-p">Confirming with Twitch whether Chris is live right now.</p>`;
+    if(d.state==="unavailable")return `<span class="lv-badge chk"><i></i>Status unavailable</span><h3 class="lv-h">Stream status unavailable</h3><p class="lv-p">We couldn't confirm with Twitch whether Chris is live right now. The site keeps retrying automatically, or you can check his channel directly.</p>${d.slot?`<p class="lv-meta">Next on his Twitch schedule: ${when(d.slot.s)} ${tzName(d.slot.s)}, Las Vegas time</p>`:""}<div class="lv-act">${tw("Check on Twitch")}</div>`;
     if(d.state==="countdown"){const s=d.slot;return `<span class="lv-badge"><i></i>Offline</span><span class="kicker" style="display:flex;margin-top:14px">Next stream</span>
       <p class="lv-when">${when(s.s)}<small>${tzName(s.s)}, Las Vegas time</small></p>${slotMeta(s)}
       <div class="lv-clock" data-to="${s.s}" role="timer" aria-live="off">${["Days","Hours","Mins","Secs"].map(l=>`<div><b>00</b><small>${l}</small></div>`).join("")}</div>
       <span class="lv-tag">From Chris's Twitch schedule</span>${unk}<div class="lv-act">${tw("Follow on Twitch")}</div>`}
-    if(d.state==="ready")return `<span class="lv-badge"><i></i>Scheduled for ${fmt(d.slot.s,{hour:"numeric",minute:"2-digit"})} ${tzName(d.slot.s)}</span><h3 class="lv-h">Chris is getting ready!</h3><p class="lv-p">Sometimes life gets busy. Chris might be running a little behind, but keep the good vibes going. We'll let you know when he goes live!</p>${slotMeta(d.slot)}${unk}<div class="lv-act">${tw("Follow on Twitch")}</div>`;
+    if(d.state==="ready")return `<span class="lv-badge"><i></i>Offline &middot; scheduled for ${fmt(d.slot.s,{hour:"numeric",minute:"2-digit"})} ${tzName(d.slot.s)}</span><h3 class="lv-h">Chris is getting ready!</h3><p class="lv-p">Sometimes life gets busy. Chris might be running a little behind, but keep the good vibes going. We'll let you know when he goes live!</p>${slotMeta(d.slot)}${unk}<div class="lv-act">${tw("Follow on Twitch")}</div>`;
     return `<span class="lv-badge"><i></i>Offline</span><h3 class="lv-h">Stay close, Sin Squad!</h3><p class="lv-p">Follow Chris on Twitch so you don't miss the next stream.</p>${unk}<div class="lv-act">${tw("Follow on Twitch")}</div>`}
   function listHTML(n){if(S.slots===null)return `<p class="muted">Loading his Twitch schedule.</p>`;const now=Date.now(),up=S.slots.filter(x=>x.e>now).slice(0,n);
     if(!up.length)return `<p class="muted">${S.calFail?"His Twitch schedule could not load just now.":"No upcoming streams are on his Twitch schedule right now."} Follow on Twitch to get notified.</p>`;
@@ -2450,7 +2462,9 @@ const LIVE=(()=>{
     if(host){if(Date.now()-S.embedAt>3*60e3){S.embed=null;S.embedFail=false}makePlayer()}
     if(!$("[data-live],[data-live-list],[data-live-chip]")){clearInterval(tick);return}
     if(S.slots===null||Date.now()-S.calAt>30*60e3)loadCal();paint()}
-  document.addEventListener("visibilitychange",()=>{if(!document.hidden&&host&&host.isConnected&&S.embed!==true&&Date.now()-S.embedAt>60e3)makePlayer()});
+  document.addEventListener("visibilitychange",()=>{if(!document.hidden&&host&&host.isConnected&&(S.embedFail||Date.now()-S.embedAt>60e3)&&!watching())makePlayer()});
+  addEventListener("offline",()=>{if(host&&host.isConnected)fail()});
+  addEventListener("online",()=>{if(host&&host.isConnected){makePlayer();loadCal()}});
   return {mount,decide,expand,parseICS,S};
 })();
 const liveCard=(size)=>`<div class="lv lv-${size} glass rv sc" data-live="${size}"><div class="lv-screen" data-live-player aria-label="Official Twitch player for SinCityRyd3r_702"></div><div class="lv-side"><div class="lv-body"></div></div></div>`;
