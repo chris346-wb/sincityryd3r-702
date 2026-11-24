@@ -2861,7 +2861,7 @@ function playIntro(){
   introTimers.forEach(clearTimeout);introTimers=[];
   intro.style.display="";intro.className="";document.body.classList.add("lock");document.body.classList.remove("reveal");buildName();buildWelcome();
   $$(".intro-tag .wd").forEach((w,i)=>w.style.transitionDelay=(i*.09).toFixed(2)+"s");
-  $$(".intro-av .avatar").forEach(e=>e.innerHTML=avatarHTML());
+  $$(".intro-av .avatar").forEach(e=>e.innerHTML='<img src="img/intro-logo.jpg" alt="SinCityRyd3r_702 logo" width="480" height="480">');
   void intro.offsetWidth;
   const T=(ms,fn)=>introTimers.push(setTimeout(fn,ms));
   if(RM){intro.className="s1 s2 s3 s5 locked-name";$$("#iname span").forEach(s=>{s.style.transition="none";s.classList.add("in")});T(2200,endIntro);return}
