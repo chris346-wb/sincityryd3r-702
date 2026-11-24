@@ -1814,6 +1814,19 @@ html.in-preview .devsw button.own::after{display:none}
 @media (prefers-reduced-motion:reduce){.wc-photos.rv .wc-ph img{transform:none;transition:none}}
 .embed-off{display:grid;place-items:center;align-content:center;gap:16px;text-align:center;min-height:100%;height:100%;padding:24px;color:var(--text)}
 @media (max-width:900px){.live-side{position:static!important}}
+/* ===== responsive QA fixes (Nov 2026) ===== */
+/* intro: keep Skip clear of phone home-bar areas; sit the intro slightly above centre on phones */
+.skip{bottom:calc(22px + env(safe-area-inset-bottom,0px));right:calc(22px + env(safe-area-inset-right,0px))}
+@media (max-width:600px){#intro .intro-stage{translate:0 calc(-1 * min(4vh,32px))}}
+@media (max-width:600px) and (max-height:600px){#intro .intro-stage{translate:0 -10px}}
+/* long buttons wrap instead of being cut off on very narrow phones */
+.btn{max-width:100%}
+@media (max-width:420px){.btn{white-space:normal;text-align:center;justify-content:center;line-height:1.35}}
+/* bigger invisible tap areas, same look */
+.rig .hot::before{content:"";position:absolute;inset:-12px;border-radius:50%}
+.embed-btn::before{content:"";position:absolute;inset:-7px -4px;border-radius:999px}
+/* smallest labels a touch larger on phones for readability */
+@media (max-width:600px){.itc-kind,.itc-game,.rec,.gc-cat,.gchip{font-size:.66rem}.gbadge small{font-size:.62rem}}
 </style>
 </head>
 <body class="lock">
@@ -1975,7 +1988,7 @@ const CONFIG = {
 /* ===================== REAL TWITCH CONTENT (researched on twitch.tv/sincityryd3r_702, Nov 19, 2026) =====================
    Images ship in /img. If an /img file is missing, the page falls back to the same thumbnail on Twitch's CDN, then to built-in artwork. */
 const TW="https://www.twitch.tv/sincityryd3r_702";
-const VOD=id=>`${TW}/videos/${id}`, CLIP=slug=>`${TW}/clip/${slug}`;
+const VOD=id=>`https://www.twitch.tv/videos/${id}`, CLIP=slug=>`${TW}/clip/${slug}`;
 const TWI={vod:h=>`https://static-cdn.jtvnw.net/cf_vods/d2nvs31859zcd8/${h}//thumb/thumb0-640x360.jpg`,clip:(id,r="1920x1080")=>`https://static-cdn.jtvnw.net/twitch-video-assets/twitch-vap-video-assets-prod-us-west-2/${id}/landscape/thumb/thumb-0000000000-${r}.jpg`};
 const GAME_SHORT={mw4:"MW4",nba:"NBA 2K27",warzone:"Warzone",cod:"Call of Duty"};
 
@@ -2315,7 +2328,7 @@ const ITC_SNAPSHOT={checked:"2026-11-19",items:[
   {type:"Clip",title:"whip cream punishment from my kiddos",game:"Modern Warfare 4",date:"2026-10-31",dur:"0:30",url:CLIP("FunnyProtectiveVelociraptorPhilosoraptor-ds_1nRQs-fA14UJu"),img:"kids-whip-cream",remote:TWI.clip("86cc6fd8-3efe-4606-8d75-bda7404c29b7")},
   {type:"Clip",title:"NBA 2k27 Grind leggooo",game:"NBA 2K27",date:"2026-10-28",dur:"1:00",url:CLIP("MagnificentMotionlessAnteaterShazBotstix-oxs9n3Jw-pB7Ex3s"),img:"clip-nba-grind",remote:TWI.clip("f35aa81d-d084-4f6d-9ed1-f1890e7df8d4")}
 ]};
-const ITC_URL=/^https:\/\/www\.twitch\.tv\/sincityryd3r_702\/(videos\/\d+|clip\/[A-Za-z0-9_-]+)([?#].*)?$/i;
+const ITC_URL=/^https:\/\/www\.twitch\.tv\/(videos\/\d+|sincityryd3r_702\/clip\/[A-Za-z0-9_-]+)([?#].*)?$/i;
 function itcValid(it){
   if(!it||typeof it.title!=="string"||!it.title.trim()||typeof it.url!=="string"||!ITC_URL.test(it.url))return false;
   if(!/^\d{4}-\d{2}-\d{2}$/.test(it.date||""))return false;
@@ -2326,7 +2339,7 @@ function itcNormalize(j){
   if(j&&Array.isArray(j.items))return j.items;
   const out=[],day=s=>{try{return new Date(s).toLocaleDateString("en-CA",{timeZone:"America/Los_Angeles"})}catch(e){return ""}},
     th=u=>(u||"").replace("%{width}","640").replace("%{height}","360");
-  ((j&&j.videos&&j.videos.data)||[]).forEach(v=>out.push({type:"Broadcast",title:v.title,game:v.game_name||"",date:day(v.created_at),dur:(v.duration||"").replace(/h|m/g,":").replace("s",""),url:/^https:\/\/www\.twitch\.tv\/videos\/\d+$/.test(v.url||"")?v.url.replace("https://www.twitch.tv/videos/",TW+"/videos/"):"",img:"",remote:th(v.thumbnail_url)}));
+  ((j&&j.videos&&j.videos.data)||[]).forEach(v=>out.push({type:"Broadcast",title:v.title,game:v.game_name||"",date:day(v.created_at),dur:(v.duration||"").replace(/h|m/g,":").replace("s",""),url:/^https:\/\/www\.twitch\.tv\/videos\/\d+$/.test(v.url||"")?v.url:"",img:"",remote:th(v.thumbnail_url)}));
   ((j&&j.clips&&j.clips.data)||[]).forEach(c=>{const m=/^https:\/\/(?:clips\.twitch\.tv\/|www\.twitch\.tv\/sincityryd3r_702\/clip\/)([A-Za-z0-9_-]+)$/i.exec(c.url||"");if(!m)return;const slug=m[1];out.push({type:"Clip",title:c.title,game:c.game_name||"",date:day(c.created_at),dur:c.duration?("0:"+String(Math.round(c.duration)).padStart(2,"0")):"",url:TW+"/clip/"+slug,img:"",remote:th(c.thumbnail_url)})});
   return out;
 }
