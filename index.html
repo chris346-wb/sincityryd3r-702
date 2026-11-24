@@ -193,6 +193,7 @@ main{position:relative;z-index:2;min-height:100vh}
 .intro-flash{position:absolute;top:-20%;bottom:-20%;width:30vw;left:0;background:linear-gradient(100deg,transparent,rgba(255,255,255,.07),rgba(var(--a),.12),transparent);transform:translate3d(-40vw,0,0) skewX(-14deg);pointer-events:none}
 #intro.s6 .intro-flash{animation:flash 1.3s var(--ease) .3s forwards}
 @keyframes flash{to{transform:translate3d(130vw,0,0) skewX(-14deg)}}
+.intro-corners{position:absolute;inset:0;pointer-events:none}
 .intro-corners i{position:absolute;width:44px;height:44px;opacity:0;transform:scale(.4);transition:opacity .6s,transform .8s var(--ease)}
 .intro-corners i::before,.intro-corners i::after{content:"";position:absolute;background:var(--neon);box-shadow:0 0 10px rgba(var(--a),.7)}
 .intro-corners i::before{width:100%;height:2px}.intro-corners i::after{width:2px;height:100%}
