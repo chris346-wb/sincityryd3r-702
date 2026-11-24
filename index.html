@@ -1814,6 +1814,54 @@ html.in-preview .devsw button.own::after{display:none}
 @media (prefers-reduced-motion:reduce){.wc-photos.rv .wc-ph img{transform:none;transition:none}}
 .embed-off{display:grid;place-items:center;align-content:center;gap:16px;text-align:center;min-height:100%;height:100%;padding:24px;color:var(--text)}
 @media (max-width:900px){.live-side{position:static!important}}
+/* ===== live status (Twitch embed + Twitch schedule) ===== */
+.lv{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:22px;align-items:stretch;padding:20px;border-radius:calc(var(--r) + 6px);border:1px solid var(--line2);position:relative;overflow:hidden}
+.lv::before{content:"";position:absolute;inset:-1px;border-radius:inherit;pointer-events:none;background:radial-gradient(120% 90% at 100% 0%,rgba(var(--a),.16),transparent 60%),radial-gradient(90% 80% at 0% 100%,rgba(var(--a2),.14),transparent 60%);opacity:.9;transition:opacity .6s}
+.lv[data-state=live]{border-color:rgba(var(--a),.6);box-shadow:0 0 0 1px rgba(var(--a),.25),0 24px 70px -30px rgba(var(--a),.7)}
+.lv[data-state=live]::before{background:radial-gradient(120% 100% at 100% 0%,rgba(var(--a),.32),transparent 60%),radial-gradient(90% 80% at 0% 100%,rgba(var(--a2),.24),transparent 60%)}
+.lv-screen{position:relative;border-radius:var(--r);overflow:hidden;background:#05060a;border:1px solid var(--line2);aspect-ratio:16/9;min-width:0;align-self:center;width:100%}
+.lv-screen iframe{position:absolute;inset:0;width:100%!important;height:100%!important;border:0;display:block}
+.lv-screen .lv-wait{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--display);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--mute);background:linear-gradient(110deg,rgba(255,255,255,.02) 30%,rgba(255,255,255,.07) 50%,rgba(255,255,255,.02) 70%) 0 0/250% 100%;animation:lvShim 1.6s linear infinite}
+@keyframes lvShim{to{background-position:-250% 0}}
+.lv-side{position:relative;display:flex;flex-direction:column;justify-content:center;gap:14px;min-width:0}
+.lv-body{transition:opacity .26s,transform .26s}
+.lv-body.sw{opacity:0;transform:translateY(8px)}
+.lv-badge{display:inline-flex;align-items:center;gap:9px;font-family:var(--display);font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;padding:7px 13px;border-radius:999px;border:1px solid var(--line2);color:var(--text2);background:rgba(255,255,255,.03)}
+.lv-badge i{width:8px;height:8px;border-radius:50%;background:var(--mute);flex:none}
+.lv-badge.on{border-color:rgba(var(--a),.7);color:#fff;background:rgba(var(--a),.22)}
+.lv-badge.on i{background:#ff3b5c;box-shadow:0 0 0 0 rgba(255,59,92,.7);animation:lvPing 1.4s ease-out infinite}
+.lv-badge.chk i{animation:lvBlink 1s ease-in-out infinite}
+@keyframes lvPing{to{box-shadow:0 0 0 12px rgba(255,59,92,0)}}
+@keyframes lvBlink{50%{opacity:.25}}
+.lv-h{font-family:var(--display);text-transform:uppercase;letter-spacing:.02em;line-height:1.02;font-size:clamp(1.5rem,2.6vw,2.3rem);margin:12px 0 8px}
+.lv[data-state=live] .lv-h{background:linear-gradient(90deg,#fff,rgb(var(--a)) 55%,rgb(var(--a2)));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lv-when{font-family:var(--display);font-size:1.15rem;margin:10px 0 2px;color:var(--text)}
+.lv-when small{display:block;font-family:var(--body);font-size:.8rem;color:var(--mute);margin-top:3px;letter-spacing:0;text-transform:none}
+.lv-p{color:var(--text2);margin:0 0 4px;line-height:1.55}
+.lv-meta{color:var(--mute);font-size:.9rem;margin:4px 0 0}
+.lv-clock{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0 4px}
+.lv-clock div{text-align:center;padding:12px 4px;border-radius:14px;border:1px solid var(--line2);background:rgba(255,255,255,.035)}
+.lv-clock b{display:block;font-family:var(--display);font-size:clamp(1.5rem,2.4vw,2.2rem);line-height:1;font-variant-numeric:tabular-nums}
+.lv-clock small{font-family:var(--display);letter-spacing:.18em;font-size:.6rem;color:var(--mute);text-transform:uppercase}
+.lv-tag{display:inline-block;font-size:.78rem;color:var(--mute);margin-top:8px}
+.lv-tag::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:rgb(var(--a2));margin-right:8px;vertical-align:middle}
+.lv-note{font-size:.8rem;color:var(--mute);margin:8px 0 0}
+.lv-act{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.lv[data-state=live] .lv-act .btn-p{font-size:1rem;padding:16px 26px;box-shadow:0 0 0 0 rgba(var(--a),.6);animation:lvGlow 2.2s ease-in-out infinite}
+@keyframes lvGlow{50%{box-shadow:0 0 34px 2px rgba(var(--a),.55)}}
+.lv-sm .lv-h{font-size:clamp(1.35rem,2.1vw,1.9rem)}
+.lv-lg{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);padding:24px}
+.lv-list{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:8px}
+.lv-list li{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;align-items:center;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.025)}
+.lv-list li.now{border-color:rgba(var(--a),.55);background:rgba(var(--a),.1)}
+.lv-list .d{font-family:var(--display);font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);min-width:7.5em}
+.lv-list .t{color:var(--text);font-weight:600}
+.lv-list .g{grid-column:2;color:var(--mute);font-size:.85rem}
+.lv-chip-on{background:rgba(var(--a),.28)!important;border-color:rgba(var(--a),.7)!important;color:#fff!important}
+.lv-chip-on .pulse-dot{background:#ff3b5c}
+@media (max-width:900px){.lv,.lv-lg{grid-template-columns:1fr;padding:16px;gap:16px}}
+@media (max-width:420px){.lv-clock{gap:6px}.lv-clock div{padding:10px 2px}.lv-act .btn{flex:1 1 100%;justify-content:center}}
+@media (prefers-reduced-motion:reduce){.lv-badge.on i,.lv-badge.chk i,.lv-screen .lv-wait,.lv[data-state=live] .lv-act .btn-p{animation:none}}
 /* ===== responsive QA fixes (Nov 2026) ===== */
 /* intro: keep Skip clear of phone home-bar areas; sit the intro slightly above centre on phones */
 .skip{bottom:calc(22px + env(safe-area-inset-bottom,0px));right:calc(22px + env(safe-area-inset-right,0px))}
@@ -2299,6 +2347,114 @@ function countdownBlock(){const n=scheduleNext();
   const label=n.tw?`${n.tw.t} &middot; ${fmtSlot(n.tw.s,"America/Los_Angeles")} Vegas time <small class="muted" style="display:block;font-size:.8rem;margin-top:4px;text-transform:none;letter-spacing:0">${fmtSlot(n.tw.s,localTZ)} your time</small>`:`${n.s.title} &middot; ${n.s.full} ${fmtTime(n.s.time)}`;
   return `<div class="card glass rv"><span class="kicker">Next stream</span><h3 style="margin:10px 0 16px">${label}</h3><div class="cd" data-cd="${n.t.getTime()}">${["Days","Hours","Mins","Secs"].map(l=>`<div class="glass"><b>00</b><small>${l}</small></div>`).join("")}</div></div>`}
 
+/* ===================== LIVE STATUS =====================
+   Two official Twitch sources, no keys and no account needed:
+   1. Live or offline: the official Twitch embedded player reports ONLINE / OFFLINE for the channel.
+   2. Upcoming times: Chris's public Twitch schedule calendar (api.twitch.tv/helix/schedule/icalendar).
+   One shared state drives the homepage card, the Schedule page panel, the hero chip and the upcoming lists,
+   so they always agree. All times are shown in Las Vegas time. Nothing is guessed: if Twitch has no upcoming
+   time, no countdown is shown. */
+const LIVE=(()=>{
+  const TZ="America/Los_Angeles",CH=CONFIG.twitchChannel,BID="923487648";
+  const CAL="https://api.twitch.tv/helix/schedule/icalendar?broadcaster_id="+BID;
+  const READY_MS=3*3600e3;            // how long "getting ready" shows after a scheduled start if he is not live yet
+  const S={embed:null,embedAt:0,embedFail:false,slots:null,calFail:false,calAt:0};
+  let player=null,host=null,waitT=0,tick=0,recheckT=0,calT=0,scriptP=null,lastKey="";
+  /* --- time helpers --- */
+  const offset=(ms,tz)=>{const p=Object.fromEntries(new Intl.DateTimeFormat("en-US",{timeZone:tz,hourCycle:"h23",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit"}).formatToParts(new Date(ms)).map(x=>[x.type,x.value]));return Date.UTC(+p.year,+p.month-1,+p.day,+p.hour,+p.minute,+p.second)-ms};
+  const zoned=(y,mo,d,h,mi,tz)=>{const g=Date.UTC(y,mo-1,d,h,mi);let t=g-offset(g,tz);const o2=offset(t,tz);if(g-o2!==t)t=g-o2;return t};
+  const fmt=(ms,o)=>new Intl.DateTimeFormat("en-US",Object.assign({timeZone:TZ},o)).format(new Date(ms));
+  const tzName=ms=>(new Intl.DateTimeFormat("en-US",{timeZone:TZ,timeZoneName:"short"}).formatToParts(new Date(ms)).find(x=>x.type==="timeZoneName")||{}).value||"PT";
+  const when=ms=>fmt(ms,{weekday:"long",month:"short",day:"numeric"})+" at "+fmt(ms,{hour:"numeric",minute:"2-digit"});
+  /* --- Twitch schedule calendar --- */
+  const unesc=v=>v.replace(/\\n/gi," ").replace(/\\([,;\\])/g,"$1");
+  const parseT=x=>{const m=/^(\d{4})(\d{2})(\d{2})(?:T(\d{2})(\d{2})(\d{2})?(Z)?)?$/.exec(x.v||"");if(!m)return NaN;const [,y,mo,d,h="0",mi="0",,z]=m;
+    return z?Date.UTC(+y,+mo-1,+d,+h,+mi):zoned(+y,+mo,+d,+h,+mi,x.tz||TZ)};
+  function parseICS(txt){const evs=[];let cur=null;
+    for(const L of txt.replace(/\r?\n[ \t]/g,"").split(/\r?\n/)){
+      if(L==="BEGIN:VEVENT"){cur={ex:[]};continue}if(L==="END:VEVENT"){if(cur)evs.push(cur);cur=null;continue}if(!cur)continue;
+      const i=L.indexOf(":");if(i<0)continue;const [name,...ps]=L.slice(0,i).split(";"),val=L.slice(i+1);
+      const pr=Object.fromEntries(ps.map(p=>p.split("=")));const tz=(pr.TZID||"").replace(/^\/+/,"");
+      if(name==="DTSTART"||name==="DTEND")cur[name]={v:val,tz};
+      else if(name==="EXDATE")val.split(",").forEach(v=>cur.ex.push(parseT({v,tz})));
+      else if(name==="RRULE")cur.rr=Object.fromEntries(val.split(";").map(p=>p.split("=")));
+      else if(name==="SUMMARY")cur.sum=unesc(val).trim();else if(name==="CATEGORIES")cur.cat=unesc(val).trim();else if(name==="STATUS")cur.st=val}
+    return evs}
+  function expand(evs,from,to){const out=[],DN=["SU","MO","TU","WE","TH","FR","SA"];
+    for(const e of evs){if(!e.DTSTART||e.st==="CANCELLED")continue;const s0=parseT(e.DTSTART),e0=e.DTEND?parseT(e.DTEND):s0+3*3600e3;if(isNaN(s0))continue;const dur=Math.max(0,e0-s0)||3*3600e3;
+      const m=/^(\d{4})(\d{2})(\d{2})(?:T(\d{2})(\d{2}))?/.exec(e.DTSTART.v),tz=e.DTSTART.tz||TZ,utc=/Z$/.test(e.DTSTART.v);
+      const add=s=>{if(e.ex.some(x=>Math.abs(x-s)<6e4))return;if(s+dur>from&&s<to)out.push({s,e:s+dur,t:e.sum||"Live on Twitch",g:e.cat||""})};
+      const rr=e.rr;if(!rr||!/^(WEEKLY|DAILY)$/.test(rr.FREQ)){add(s0);continue}
+      const iv=+(rr.INTERVAL||1),until=rr.UNTIL?parseT({v:rr.UNTIL,tz:/Z$/.test(rr.UNTIL)?"":tz}):Infinity,count=rr.COUNT?+rr.COUNT:Infinity;
+      const y=+m[1],mo=+m[2],d=+m[3],h=+(m[4]||0),mi=+(m[5]||0),day0=Date.UTC(y,mo-1,d)/864e5;
+      const days=rr.FREQ==="DAILY"?null:(rr.BYDAY?rr.BYDAY.split(",").map(x=>x.slice(-2)):[DN[new Date(Date.UTC(y,mo-1,d)).getUTCDay()]]);
+      const wk0=day0-new Date(Date.UTC(y,mo-1,d)).getUTCDay();let n=0;
+      for(let k=0;k<800;k++){const dd=new Date((day0+k)*864e5),wd=dd.getUTCDay();
+        if(days){if(!days.includes(DN[wd]))continue;if(Math.floor((day0+k-wk0)/7)%iv)continue}else if(k%iv)continue;
+        const s=utc?Date.UTC(dd.getUTCFullYear(),dd.getUTCMonth(),dd.getUTCDate(),h,mi):zoned(dd.getUTCFullYear(),dd.getUTCMonth()+1,dd.getUTCDate(),h,mi,tz);
+        if(s>until||++n>count||s>to)break;add(s)}}
+    const seen=new Set();return out.sort((a,b)=>a.s-b.s).filter(x=>{const k=x.s+"|"+x.t;if(seen.has(k))return false;seen.add(k);return true})}
+  async function loadCal(){clearTimeout(calT);let txt=null;
+    try{const r=await fetch(CAL,{cache:"no-store"});if(r.ok){const t=await r.text();if(/BEGIN:VCALENDAR/.test(t)){txt=t;try{localStorage.setItem("scr_cal_v1",JSON.stringify({ts:Date.now(),t}))}catch(e){}}}}catch(e){}
+    if(!txt){try{const c=JSON.parse(localStorage.getItem("scr_cal_v1")||"null");if(c&&Date.now()-c.ts<12*3600e3)txt=c.t}catch(e){}}
+    if(txt){const now=Date.now();S.slots=expand(parseICS(txt),now-READY_MS,now+15*864e5);S.calFail=false}else{S.slots=S.slots||[];S.calFail=true}
+    S.calAt=Date.now();paint();calT=setTimeout(loadCal,30*60e3)}
+  /* --- official Twitch embedded player --- */
+  const loadScript=()=>scriptP||(scriptP=new Promise((ok,no)=>{if(window.Twitch&&Twitch.Player)return ok();const sc=document.createElement("script");sc.src="https://player.twitch.tv/js/embed/v1.js";sc.async=true;sc.onload=()=>window.Twitch&&Twitch.Player?ok():no();sc.onerror=no;document.head.appendChild(sc)}));
+  function set(v){clearTimeout(waitT);S.embed=v;S.embedAt=Date.now();S.embedFail=false;paint()}
+  async function makePlayer(){if(!host||!host.isConnected)return;clearTimeout(waitT);
+    try{await loadScript()}catch(e){S.embedFail=true;paint();return}
+    if(!host||!host.isConnected)return;host.innerHTML='<div class="lv-wait">Checking Twitch</div>';const box=document.createElement("div");box.style.cssText="position:absolute;inset:0";host.appendChild(box);
+    try{player=new Twitch.Player(box,{channel:CH,width:"100%",height:"100%",muted:true,autoplay:false,parent:[location.hostname||"localhost"]});
+      const E=Twitch.Player;player.addEventListener(E.ONLINE,()=>set(true));player.addEventListener(E.OFFLINE,()=>set(false));player.addEventListener(E.ENDED,()=>set(false));
+      player.addEventListener(E.READY,()=>{const w=host&&host.querySelector(".lv-wait");w&&w.remove()})}catch(e){S.embedFail=true;paint();return}
+    waitT=setTimeout(()=>{if(S.embed===null||Date.now()-S.embedAt>20e3){S.embedFail=true;paint()}},20e3)}
+  function recheck(){clearTimeout(recheckT);if(!host||!host.isConnected)return;const d=decide(Date.now());
+    const near=d.state==="ready"||(d.state==="countdown"&&d.slot.s-Date.now()<15*60e3);
+    if(d.state!=="live")recheckT=setTimeout(()=>{if(S.embed!==true)makePlayer();recheck()},near?60e3:5*60e3)}
+  /* --- the one decision every view shares --- */
+  function decide(now){
+    if(S.embed===true)return{state:"live"};
+    if(S.embed===null&&!S.embedFail&&host)return{state:"checking"};
+    if(S.slots===null)return{state:"checking"};
+    const cur=S.slots.find(x=>x.s<=now&&now<Math.min(x.e,x.s+READY_MS));
+    if(cur)return{state:"ready",slot:cur};
+    const nx=S.slots.find(x=>x.s>now);if(nx)return{state:"countdown",slot:nx};
+    return{state:"none"}}
+  const tw=(l,ic="twitch")=>btn(l,CONFIG.twitchUrl,"p",ic,true);
+  function html(d,big){const unk=S.embedFail&&d.state!=="live"?`<p class="lv-note">Live status could not load just now. Twitch always has the latest.</p>`:"";
+    const slotMeta=s=>big&&(s.t||s.g)?`<p class="lv-meta">${escA(s.t)}${s.g?" &middot; "+escA(s.g):""}</p>`:"";
+    if(d.state==="live")return `<span class="lv-badge on"><i></i>Live now</span><h3 class="lv-h">We're live, Sin Squad!</h3><p class="lv-p">Chris is live on Twitch right now. Come hang out and join the action.</p><div class="lv-act">${tw("Watch live on Twitch","play")}</div>`;
+    if(d.state==="checking")return `<span class="lv-badge chk"><i></i>Checking Twitch</span><h3 class="lv-h">Is the city live?</h3><p class="lv-p">Checking Chris's channel on Twitch right now.</p>`;
+    if(d.state==="countdown"){const s=d.slot;return `<span class="lv-badge"><i></i>Offline</span><span class="kicker" style="display:flex;margin-top:14px">Next stream</span>
+      <p class="lv-when">${when(s.s)}<small>${tzName(s.s)}, Las Vegas time</small></p>${slotMeta(s)}
+      <div class="lv-clock" data-to="${s.s}" role="timer" aria-live="off">${["Days","Hours","Mins","Secs"].map(l=>`<div><b>00</b><small>${l}</small></div>`).join("")}</div>
+      <span class="lv-tag">From Chris's Twitch schedule</span>${unk}<div class="lv-act">${tw("Follow on Twitch")}</div>`}
+    if(d.state==="ready")return `<span class="lv-badge"><i></i>Scheduled for ${fmt(d.slot.s,{hour:"numeric",minute:"2-digit"})} ${tzName(d.slot.s)}</span><h3 class="lv-h">Chris is getting ready!</h3><p class="lv-p">Sometimes life gets busy. Chris might be running a little behind, but keep the good vibes going. We'll let you know when he goes live!</p>${slotMeta(d.slot)}${unk}<div class="lv-act">${tw("Follow on Twitch")}</div>`;
+    return `<span class="lv-badge"><i></i>Offline</span><h3 class="lv-h">Stay close, Sin Squad!</h3><p class="lv-p">Follow Chris on Twitch so you don't miss the next stream.</p>${unk}<div class="lv-act">${tw("Follow on Twitch")}</div>`}
+  function listHTML(n){if(S.slots===null)return `<p class="muted">Loading his Twitch schedule.</p>`;const now=Date.now(),up=S.slots.filter(x=>x.e>now).slice(0,n);
+    if(!up.length)return `<p class="muted">${S.calFail?"His Twitch schedule could not load just now.":"No upcoming streams are on his Twitch schedule right now."} Follow on Twitch to get notified.</p>`;
+    return `<ul class="lv-list">${up.map(x=>`<li class="${x.s<=now?"now":""}"><span class="d">${fmt(x.s,{weekday:"short",month:"short",day:"numeric"})}</span><span class="t">${fmt(x.s,{hour:"numeric",minute:"2-digit"})} to ${fmt(x.e,{hour:"numeric",minute:"2-digit"})} <small class="muted">${tzName(x.s)}</small></span>${x.t||x.g?`<span class="g">${escA(x.t)}${x.g?" &middot; "+escA(x.g):""}</span>`:""}</li>`).join("")}</ul>`}
+  function paint(){const d=decide(Date.now()),key=d.state+":"+(d.slot?d.slot.s:"")+":"+S.embedFail+":"+(S.slots?S.slots.length:"x")+":"+S.calAt;
+    if(key!==lastKey){lastKey=key;
+      $$("[data-live]").forEach(el=>{el.dataset.state=d.state;const b=$(".lv-body",el);if(!b)return;const big=el.dataset.live==="lg";
+        if(!b.innerHTML||RM){b.innerHTML=html(d,big);bindMag(b)}else{b.classList.add("sw");setTimeout(()=>{b.innerHTML=html(d,big);bindMag(b);b.classList.remove("sw");clock()},260)}});
+      $$("[data-live-list]").forEach(el=>el.innerHTML=listHTML(+el.dataset.liveList||5));
+      $$("[data-live-chip]").forEach(c=>{const on=d.state==="live";c.classList.toggle("lv-chip-on",on);c.href=on?CONFIG.twitchUrl:"#schedule";on?(c.target="_blank",c.rel="noopener"):c.removeAttribute("target");
+        const t=$(".lv-chip-t",c);if(t)t.textContent=on?"Live now on Twitch":"Catch the next stream"})}
+    clock();recheck()}
+  function clock(){clearInterval(tick);const cs=$$("[data-live] .lv-clock");if(!cs.length)return;
+    const step=()=>{const n=Date.now();let end=false;cs.forEach(c=>{let s=Math.max(0,(+c.dataset.to-n)/1000);if(s<=0)end=true;const v=[s/86400,s%86400/3600,s%3600/60,s%60].map(Math.floor);$$("b",c).forEach((b,i)=>{const t=String(v[i]).padStart(2,"0");if(b.textContent!==t)b.textContent=t})});
+      if(end){clearInterval(tick);lastKey="";paint();if(host)makePlayer()}};step();tick=setInterval(step,1000)}
+  function mount(){clearTimeout(recheckT);clearTimeout(waitT);player=null;host=$("[data-live-player]");lastKey="";
+    if(host){if(Date.now()-S.embedAt>3*60e3){S.embed=null;S.embedFail=false}makePlayer()}
+    if(!$("[data-live],[data-live-list],[data-live-chip]")){clearInterval(tick);return}
+    if(S.slots===null||Date.now()-S.calAt>30*60e3)loadCal();paint()}
+  document.addEventListener("visibilitychange",()=>{if(!document.hidden&&host&&host.isConnected&&S.embed!==true&&Date.now()-S.embedAt>60e3)makePlayer()});
+  return {mount,decide,expand,parseICS,S};
+})();
+const liveCard=(size)=>`<div class="lv lv-${size} glass rv sc" data-live="${size}"><div class="lv-screen" data-live-player aria-label="Official Twitch player for SinCityRyd3r_702"></div><div class="lv-side"><div class="lv-body"></div></div></div>`;
+
 /* ===================== PAGES ===================== */
 const V={};
 function clipCard(c,i){return `<article class="media clip fitem rv sc d${i%4}" data-cat="${c.g}${c.fam?" family":""}">
@@ -2424,7 +2580,7 @@ V.home=()=>`
       </ul>
       <div class="ctas rv d4">${btn("Follow on Twitch",CONFIG.twitchUrl,"p","twitch",true)}${btn("Watch Live","#live","g","play")}${btn("Explore the Community","#community","g","users")}</div>
     </div>
-    <div class="hero-av rv sc d2"><div class="orbit o2"></div><div class="orbit"></div><div class="ringglow"></div><div class="avatar">${avatarHTML()}</div><a class="live-chip glass" href="#live"><span class="pulse-dot"></span>Catch the next stream</a></div>
+    <div class="hero-av rv sc d2"><div class="orbit o2"></div><div class="orbit"></div><div class="ringglow"></div><div class="avatar">${avatarHTML()}</div><a class="live-chip glass" href="#schedule" data-live-chip><span class="pulse-dot"></span><span class="lv-chip-t">Catch the next stream</span></a></div>
   </div>
   <a href="#inside" class="scroll-cue" aria-label="Scroll down" data-scroll></a>
 </section>
@@ -2468,7 +2624,8 @@ ${divider()}
     <div class="card rv d2 card-hot"><div class="ico">${icon("moon")}</div><h3>Friday &amp; Saturday Nights</h3><p>Night-long streams. The main event of the week.</p></div>
     <div class="card rv d3"><div class="ico">${icon("calendar")}</div><h3>Some Sundays</h3><p>Bonus Sunday sessions when the schedule allows.</p></div>
   </div>
-  <div style="margin-top:28px" class="rv">${btn("This week's times","#schedule","g","calendar")}</div>
+  <div style="margin-top:26px">${liveCard("sm")}</div>
+  <div style="margin-top:22px" class="rv">${btn("Full schedule","#schedule","g","calendar")}</div>
 </div></section>
 
 <section style="padding-top:40px"><div class="wrap">
@@ -2576,9 +2733,9 @@ ${phero("Stream schedule","Your week in <span class='red'>the city</span>","Stre
   <div class="week">${CONFIG.schedule.map((s,i)=>`<div class="day ${s.kind} rv d${i%5}"><span class="full">${s.full}</span><span class="dn">${s.d}</span><div class="lvl">${[0,1,2].map(k=>`<i class="${(s.kind==='night'?3:s.kind==='flex'?2:1)>k?'f':''}"></i>`).join("")}</div><div class="type">${s.title}</div><div class="tm">${s.note}</div></div>`).join("")}</div>
   <div class="legend rv"><span><i style="background:linear-gradient(180deg,var(--red),var(--blood))"></i>Night-long stream</span><span><i style="background:rgba(var(--a2),.3)"></i>Weekday evening (2 to 3 per week)</span><span><i style="background:rgba(var(--hi),.08)"></i>Some Sundays</span></div>
 </div></section>
-<section style="padding-top:0"><div class="wrap grid ${countdownBlock()?"g2":""}">
-  ${countdownBlock()}
-  <div class="card rv d2"><div class="ico">${icon("calendar")}</div><h3>This week on Twitch</h3>${twWeekList()}<p class="muted" style="font-size:.85rem;margin-top:12px">From his Twitch schedule (checked Nov 19, 2026). Times can change, so Twitch always has the latest.</p><div style="margin-top:16px;display:flex;gap:12px;flex-wrap:wrap">${btn("Twitch schedule",TW+"/schedule","p","twitch",true)}${btn("Watch Live","#live","g","play")}</div></div>
+<section style="padding-top:0"><div class="wrap">
+  ${liveCard("lg")}
+  <div class="card rv d2" style="margin-top:var(--gap)"><div class="ico">${icon("calendar")}</div><h3>Coming up on Twitch</h3><div data-live-list="6"></div><p class="muted" style="font-size:.85rem;margin-top:12px">Straight from Chris's Twitch schedule, shown in Las Vegas time. Plans can change, so Twitch always has the latest.</p><div style="margin-top:16px;display:flex;gap:12px;flex-wrap:wrap">${btn("Twitch schedule",TW+"/schedule","p","twitch",true)}${btn("Watch Live","#live","g","play")}</div></div>
 </div></section>`;
 
 V.live=()=>`
@@ -2601,7 +2758,7 @@ ${phero("Watch live","Pull up a <span class='red'>seat</span>","Watch the stream
   <div class="card rv"><div class="ico">${icon("film")}</div><h3>Recent broadcasts</h3>
     <ul class="vod-list">${RECENT_VODS.map(v=>`<li><a href="${VOD(v.id)}" ${ext}><span class="vt">${v.t}</span><span class="vm">${v.g} &middot; ${v.d}</span>${icon("arrow")}</a></li>`).join("")}</ul>
     <div style="margin-top:16px">${btn("All past broadcasts",TW+"/videos","g","film",true)}</div></div>
-  <div class="live-side" style="display:grid;gap:var(--gap);align-content:start;align-self:start;position:sticky;top:110px">${countdownBlock()}<div class="card rv d2"><div class="ico">${icon("calendar")}</div><h3>Coming up</h3>${twWeekList(2)}<div style="margin-top:14px">${btn("Full schedule","#schedule","g","arrow")}</div></div></div>
+  <div class="live-side" style="display:grid;gap:var(--gap);align-content:start;align-self:start;position:sticky;top:110px"><div class="card rv d2"><div class="ico">${icon("calendar")}</div><h3>Coming up</h3><div data-live-list="3"></div><div style="margin-top:14px">${btn("Full schedule","#schedule","g","arrow")}</div></div></div>
 </div></section>`;
 
 V.clips=()=>`
@@ -2719,7 +2876,7 @@ function route(first=false){
   const p=PAGES.find(x=>x[0]===h);
   document.title=(h==="home"?"SinCityRyd3r_702 | Win or Lose, We Vibe As One":`${p[2]} | SinCityRyd3r_702`);
   $('meta[name="description"]').setAttribute("content",META[h]);
-  window.scrollTo(0,0);init();if(h==="home")itcInit();try{ATMO.scan()}catch(e){}try{BGFX.set(h)}catch(e){}
+  window.scrollTo(0,0);init();try{LIVE.mount()}catch(e){console.warn("[live]",e)}if(h==="home")itcInit();try{ATMO.scan()}catch(e){}try{BGFX.set(h)}catch(e){}
   if(pendingGame){const t=$("#g-"+pendingGame);pendingGame=null;if(t)requestAnimationFrame(()=>t.scrollIntoView({behavior:RM?"auto":"smooth"}))}
   if(!first&&!RM){v.classList.remove("enter");void v.offsetWidth;v.classList.add("enter");const pg=$("#navProg");pg.classList.remove("go");void pg.offsetWidth;pg.classList.add("go")}
 }
