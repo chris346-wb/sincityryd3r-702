@@ -205,7 +205,7 @@ main{position:relative;z-index:2;min-height:100vh}
 @keyframes cornerPulse{to{opacity:.35}}
 .intro-stage{position:relative;display:flex;flex-direction:column;align-items:center;gap:20px;padding:20px;text-align:center;transition:transform 1.4s var(--ease)}
 #intro.s7 .intro-stage{transform:scale(1.03)}
-.intro-avwrap{position:relative;width:clamp(110px,18vmin,170px);aspect-ratio:1;animation:float 4s ease-in-out infinite alternate}
+.intro-avwrap{position:relative;width:clamp(132px,24vmin,210px);aspect-ratio:1;animation:float 4s ease-in-out infinite alternate}
 @keyframes float{from{translate:0 -5px}to{translate:0 6px}}
 .intro-halo{position:absolute;inset:-22px;border-radius:50%;border:1px dashed rgba(var(--a),.45);opacity:0;transform:scale(.6) rotate(-90deg);transition:opacity .8s,transform 1.2s var(--ease)}
 #intro.s1 .intro-halo{opacity:1;transform:none}
@@ -246,9 +246,6 @@ main{position:relative;z-index:2;min-height:100vh}
 #intro .logo-mark{animation:float 3.2s ease-in-out .4s infinite alternate}
 #intro .logo-note{opacity:0;transform:translate3d(-8px,0,0);transition:opacity .6s,transform .8s var(--ease)}
 #intro.s5 .logo-note{opacity:1;transform:none}
-#intro .logo-art{width:clamp(118px,19vmin,172px);height:auto;aspect-ratio:1;display:block}
-#intro .logo-art img{display:block;width:100%;height:100%;object-fit:contain;border-radius:16px;border:1px solid rgba(var(--a),.45);box-shadow:0 0 26px rgba(var(--a),.35),0 14px 40px -12px rgba(0,0,0,.8)}
-#intro .intro-logo::before{left:50%;width:150%;height:150%;margin:0;top:50%;translate:-50% -50%}
 .intro-tag{display:flex;align-items:center;gap:16px;font-family:var(--display);letter-spacing:.4em;font-size:clamp(.66rem,1.5vw,.95rem);color:var(--mute)}
 .intro-tag .ln{width:clamp(24px,6vw,70px);height:1px;background:linear-gradient(90deg,transparent,var(--neon));transform:scaleX(0);transform-origin:right;transition:transform .9s var(--ease)}
 .intro-tag .ln.r{background:linear-gradient(90deg,var(--neon),transparent);transform-origin:left}
@@ -1833,10 +1830,9 @@ html.in-preview .devsw button.own::after{display:none}
   <div class="intro-flash"></div>
   <div class="intro-corners" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
   <div class="intro-stage">
-    <div class="intro-avwrap"><div class="intro-halo"></div><div class="intro-av"><div class="ring"></div><div class="intro-sweep"></div><div class="avatar" data-avatar></div></div></div>
+    <div class="intro-avwrap"><div class="intro-halo"></div><div class="intro-av"><div class="ring"></div><div class="intro-sweep"></div><div class="avatar"><img src="img/intro-logo.jpg" alt="SinCityRyd3r_702 logo" width="480" height="480"></div></div></div>
     <div class="intro-welcome" id="iwelcome" aria-label="Welcome to the city"></div>
     <div class="intro-namewrap"><div class="intro-name" id="iname" aria-label="SinCityRyd3r_702"></div><div class="intro-shine" aria-hidden="true"></div></div>
-    <div class="intro-logo" data-logo-intro></div>
     <div class="intro-tag"><span class="ln"></span><span class="txt"><span class="wd">WIN</span><span class="wd">OR</span><span class="wd">LOSE,</span><span class="wd">WE</span><span class="wd">VIBE</span><span class="wd">AS</span><span class="wd">ONE</span></span><span class="ln r"></span></div>
   </div>
   <div class="intro-progress"></div>
@@ -2238,7 +2234,6 @@ const ext=`target="_blank" rel="noopener"`;
 function avatarHTML(){return CONFIG.profileImage?`<img src="${CONFIG.profileImage}" data-remote="${CONFIG.profileRemote||""}" alt="SinCityRyd3r_702 Twitch profile picture" onerror="avFail(this)">`:`<span class="mono">CR</span><span class="ph">Photo</span>`}
 function logoHTML(big=false){
   if(CONFIG.logoImage&&!big)return `<img class="brand-logo" src="${CONFIG.logoImage}" data-remote="${CONFIG.profileRemote||""}" alt="SinCityRyd3r_702 logo" width="40" height="40" onerror="avFail(this)">`;
-  if(big)return `<span class="logo-slot"><span class="logo-mark logo-big logo-art"><img src="img/intro-logo.jpg" alt="SinCityRyd3r_702 logo" width="480" height="480"></span></span>`;
   return `<span class="logo-slot"><span class="logo-mark ${big?'logo-big':''}"><svg viewBox="0 0 40 40"><polygon points="20,1.5 37,11 37,29 20,38.5 3,29 3,11" style="fill:rgba(var(--a),.14);stroke:var(--neon)" stroke-width="1.5"/><polygon points="20,6 33,13.5 33,26.5 20,34 7,26.5 7,13.5" fill="none" style="stroke:var(--neon)" stroke-opacity=".4" stroke-dasharray="2 2"/></svg><b>702</b></span></span>`}
 const btn=(label,href,v="p",ic="",x=false,extra="")=>`<a class="btn btn-${v} mag" href="${href}" ${x?ext:""} ${extra}>${ic?icon(ic):""}<span>${label}</span></a>`;
 const sh=(k,t,p="",c=false)=>`<div class="sh ${c?'c':''}"><span class="kicker rv">${k}</span><h2 class="display split">${t}</h2>${p?`<p class="rv d2">${p}</p>`:""}</div>`;
